@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>My Bookshelf</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="4403Style.css" rel="stylesheet" type="text/css">
+<link href="../../Documents/Unnamed Site 2/4403Style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class = "header">
+<h1 align="center">IT 4403</h1>
+</div>
+<div class = "menu">
+<ul>
+<li><a href="https://github.com/aPersaud8/aPersaud8.github.io">Respoitory</a></li>
+<li><a href="Examples.html">Examples</a></li>
+</ul>
+</div>
+<body>
+</body>
+<script>
+				$.ajax({
+					url: "https://www.googleapis.com/books/v1/users/105191495659526361295/bookshelves/1001/volumes",
+				dataType: "json",
+				success: function(res){
+					console.log(res);
+					displayResults(res);
+				}
+				});
+	function displayResults(spons){
+			var title,author,bookImg;
+			var item;
+			var div;
+			for(var i = 0; i < spons.items.length;i++){
+				item = spons.items[i];
+				title = item.volumeInfo.title;
+				author = item.volumeInfo.authors;
+				bookImg = item.volumeInfo.imageLinks.smallThumbnail;
+				console.log(bookImg);
+				div = document.createElement('div');
+				div.id = 'results' + i;
+				div.innerHTML='<img style = "float:left" src='+ bookImg + '><p class = ".text">Title: ' + title + '</p> <p>Author: ' + author + '</p> <br></br><br></br><br></br><br></br>';
+				document.body.appendChild(div);
+			
+			}
+		}
+	
+</script>
+</html>

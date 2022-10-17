@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="4403Style.css" rel="stylesheet" type="text/css">
+<link href="../../Documents/Unnamed Site 2/4403Style.css" rel="stylesheet" type="text/css">
+	</head>
+<body>
+<div class = "header">
+<h1 align="center">IT 4403</h1>
+</div>
+<div class = "menu">
+<ul>
+<li><a href="https://github.com/aPersaud8/aPersaud8.github.io">Respoitory</a></li>
+<li><a href="Examples.html">Examples</a></li>
+<li><a href="menu.html">Milestone 2 Search Engine</a></li>
+</ul>
+</div>
+<div id="results0"></div>
+<div id="results1"></div>
+<div id="results2"></div>
+<div id="results3"></div>
+<div id="results4"></div>
+<div id="results5"></div>
+<div id="results6"></div>
+<div id="results7"></div>
+<div id="results8"></div>
+<div id="results9"></div>
+
+<body>
+<label for="search">Search:</label>
+<input type="search" name="search" id="search">
+<input name="submit" type="button" id="Submit" value="Submit">
+<div id="result"></div>
+
+<script>
+	$(document).ready(function(){
+		var searchData = " ";
+		var bookUrl ="https://www.googleapis.com/books/v1/volumes?q=" 
+		$("#Submit").click(function() {
+			searchData = $("#search").val();
+				$.ajax({
+					url: bookUrl + searchData,
+				dataType: "json",
+				success: function(res){
+					console.log(res);
+					displayResults(res);
+				}
+				});
+				
+		});
+
+		function displayResults(spons){
+			var title,author,bookImg;
+			var item;
+			var div;
+			var selfLink;
+			for(var i = 0; i < spons.items.length;i++){
+				item = spons.items[i];
+				title = item.volumeInfo.title;
+				author = item.volumeInfo.authors;
+				bookImg = item.volumeInfo.imageLinks.smallThumbnail;
+				console.log(item.selfLink);
+				div = document.getElementById("results" +i);
+				div.innerHTML='<img src='+ bookImg + '><a href= "details.html">Title: ' + title + '</a> <p>Author: ' + author + '</p>';
+				document.body.appendChild(div);
+				localStorage.setItem("url",item.selfLink);
+				
+			
+			}
+		}
+		function valueSender(p)
+		{
+			var x = p;
+			localStorage.setItem("url", x);
+			window.location.href="details.html";
+}
+	});
+
+	</script>
+</body>
+</html>

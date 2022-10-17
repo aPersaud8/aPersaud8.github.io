@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Displayed Book</title>
+<style>
+	img{
+		max-width:100%
+	}
+	.image {
+		flex-basis:40%
+	}
+	.text{
+		font-size: 16px;
+		padding-left:20px;
+	}
+	</style>
+<link href="4403Style.css" rel="stylesheet" type="text/css">
+<link href="../../Documents/Unnamed Site 2/4403Style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class = "header">
+<h1 align="center">IT 4403</h1>
+</div>
+<div class = "menu">
+<ul>
+<li><a href="https://github.com/aPersaud8/aPersaud8.github.io">Respoitory</a></li>
+<li><a href="Examples.html">Examples</a></li>
+<li><a href="menu.html">Milestone 2 Search Engine</a></li>
+<li><a href="Bookshelf.html">My Bookshelf</a></li>
+</ul>
+</div>
+ 
+</body>
+<script>
+	 fetch("https://www.googleapis.com/books/v1/volumes/OZ1IEAAAQBAJ")
+		.then(function(response){
+			return response.json()
+		})
+		.then((response) =>{
+			console.log(response)
+           displayData(response)
+        
+		})
+	function displayData(response){
+		var title,author,img,desc,publisher,publisheddate;
+		var div;
+		 const item = response;
+		title = item.volumeInfo.title;
+		author = item.volumeInfo.authors;
+		img = item.volumeInfo.imageLinks.thumbnail;
+		desc = item.volumeInfo.description;
+		publisher = item.volumeInfo.publisher;
+		publisheddate = item.volumeInfo.publishedDate;
+		div = document.createElement('div');
+				div.innerHTML='<img style = "float:left" src='+ img + '><p class = ".text">Title: ' + title + '       Publisher: '+publisher+'</p> <p>Author: ' + author + '       Published Date: '+publisheddate +'</p><p></p><p>'+ desc +'</p>';
+				document.body.appendChild(div);
+		}
+	
+	</script>
+</html>
