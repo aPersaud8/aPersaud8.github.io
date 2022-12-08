@@ -1,0 +1,231 @@
+<!DocType HTML>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.0/mustache.min.js"></script>
+    <script id="entrytemplate" type="text/template">
+        {{#results}}
+		<div class='entry'>
+            <img src='http://image.tmdb.org/t/p/w200{{poster_path}}'/>
+            <h2 onclick="onClick({{id}});"><a><u>{{title}}{{name}}</u></a></h2>
+            <p>Rating: {{vote_average}} ({{vote_count}})</p>
+        </div>
+        {{/results}}
+	</script>
+    <script id="detailtemplate" type="text/template">
+        <div class='expandedentry'>
+        <img src='http://image.tmdb.org/t/p/w200{{poster_path}}'/>
+            <h2 id='{{id}}'><u>{{title}}</u></h2>
+            <p>Rating: {{vote_average}} ({{vote_count}})</p>
+            <p>Status: {{status}}</p>
+            <p>Release Date: {{release_date}}</p>
+            <p>Synopsis: {{overview}}</p>
+            <p><b>Genre:</b> {{#genres}}{{name}}, {{/genres}}</p>
+        </div>
+    </script>
+    <script id="castTemplate" type="text/template">
+        {{cast}}
+            <details>
+                <summary>Actors:</summary>
+                <a>{{original_name}}
+                <summary></summary>
+                <summary></summary>
+                <summary></summary>
+            </details>
+
+        {{/cast}}
+    </script>
+</head>
+<script type="text/javascript">
+    const onClick = function(id){
+    $('#details').html('');
+    $.getJSON("https://api.themoviedb.org/3/movie/"+id+"?api_key=71715017ad678549a492d9d812207858", function(jsonData){
+            var template = $('#detailtemplate').html();
+			var html = Mustache.render(template, jsonData);
+			$("#details").html(html);
+    });
+    $.getJSON("https://api.themoviedb.org/3/movie/"+id+"/credits?api_key=71715017ad678549a492d9d812207858", function(jsonData){
+    
+
+    });
+};
+    $(document).ready(function(){
+        var pageCount = 1;
+        var maxPage = 0;
+        var type = true;
+        var format = true;
+        $("#pMovies").click(function(){
+            $('#results').html('');
+            type = true;
+            $.getJSON("https://api.themoviedb.org/3/discover/movie?api_key=71715017ad678549a492d9d812207858&sort_by=popularity.desc", function(jsonData){
+                maxPage = jsonData.total_pages;
+                var template = $('#entrytemplate').html();
+				var html = Mustache.render(template, jsonData);
+				$("#results").html(html);
+                $("#pages").css("visibility","visible");
+            });
+        });
+        $("#pTV").click(function(){
+            $('#results').html('');
+            type = true;
+            $.getJSON("https://api.themoviedb.org/3/discover/tv?api_key=71715017ad678549a492d9d812207858&sort_by=popularity.desc", function(jsonData){
+                maxPage = jsonData.total_pages;
+                var template = $('#entrytemplate').html();
+				var html = Mustache.render(template, jsonData);
+				$("#results").html(html);
+                $("#pages").css("visibility","visible");
+            });
+        });
+        $("#searchMovies").click(function(){
+            $('#results').html('');
+            type = true;
+            $.getJSON("https://api.themoviedb.org/3/search/movie?api_key=71715017ad678549a492d9d812207858&query="+$("#search").val(), function(jsonData){
+                maxPage = jsonData.total_pages;
+                var template = $('#entrytemplate').html();
+				var html = Mustache.render(template, jsonData);
+				$("#results").html(html);
+                $("#pages").css("visibility","visible");
+            });
+        });
+        $("#searchTV").click(function(){
+            type = false;
+            $('#results').html('');
+            $.getJSON("https://api.themoviedb.org/3/search/tv?api_key=71715017ad678549a492d9d812207858&query="+$("#search").val(), function(jsonData){
+                maxPage = jsonData.total_pages;
+                var template = $('#entrytemplate').html();
+				var html = Mustache.render(template, jsonData);
+				$("#results").html(html);
+                $("#pages").css("visibility","visible");
+            });
+        });
+        
+      //Page Changers
+         $("#left").click(function(){
+            pageCount-= 1;
+            if (pageCount == 0) {
+                pageCount = 1;
+            };
+            $('#results').html('');
+            $.getJSON("https://api.themoviedb.org/3/search/movie?api_key=71715017ad678549a492d9d812207858&query="+$("#search").val()+'&page='+pageCount, function(jsonData){
+                var template = $('#entrytemplate').html();
+				var html = Mustache.render(template, jsonData);
+				$("#results").html(html);
+                $("#pgnumber").html(pageCount);
+            });
+         });
+         $("#right").click(function(){
+            pageCount+= 1;
+            if(pageCount >= maxPage){
+                pageCount = maxPage;
+            }
+            $('#results').html('');
+            if(type = true){
+                $.getJSON("https://api.themoviedb.org/3/search/movie?api_key=71715017ad678549a492d9d812207858&query="+$("#search").val()+'&page='+pageCount, function(jsonData){
+                var template = $('#entrytemplate').html();
+				var html = Mustache.render(template, jsonData);
+				$("#results").html(html);
+                $("#pgnumber").html(pageCount);
+            });
+            };
+            if(type = false){
+                $.getJSON("https://api.themoviedb.org/3/search/tv?api_key=71715017ad678549a492d9d812207858&query="+$("#search").val()+'&page='+pageCount, function(jsonData){
+                var template = $('#entrytemplate').html();
+				var html = Mustache.render(template, jsonData);
+				$("#results").html(html);
+                $("#pgnumber").html(pageCount);
+            });
+        };
+        });
+        //Change View
+        $("#change").click(function(){
+            if(format == true){
+                $("#results").removeClass("resultsList");
+                $("#results").addClass("resultsGrid");
+                format = false;
+
+            }
+            else {
+                $('#results').removeClass('resultsGrid');
+                $('#results').addClass('resultsList');
+                format = true;
+            }
+        });
+});
+</script>
+<style>
+.resultsList
+{
+	display: flex; 
+    flex-direction:column;
+	flex-wrap: nowrap;
+    width: 100%;
+}
+.resultsGrid
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    text-align:center;
+    justify-content:space-evenly;
+    align-items:flex-start;
+    align-content:flex-start;
+
+}
+.entry
+{
+	border: thin solid black;
+	margin: 5px;
+}
+.entry img {
+    float: left;
+    width: 100px;
+    height: 150px;
+    margin:5px;
+}
+.entry h2 {
+    position:relative;
+    font-size: 20px;
+}
+.expandedentry
+{
+	border: thin solid black;
+	width: 80%;
+	margin: 5px;
+    display: inline-block;
+}
+.expandedentry img {
+    float: left;
+    width: 100px;
+    height: 150px;
+    margin:5px;
+}
+.expandedentry h2 {
+    position:relative;
+    font-size: 40px;
+}
+#pages input, p{
+    float:left;
+    margin:5px;
+}
+#details{}
+</style>
+<body>
+    <h1>Movie and TV Show Search Engine</h1>
+    <input type="button" id="pMovies" value="View Popular movies">
+    <input type="button" id="pTV" value="View TV Shows">
+    <br></br>
+    <input type="search" name="search" id="search">
+    <input name="searchTV" type="button" id="searchMovies" value="Search Movies">
+    <input name="searchTV" type="button" id="searchTV" value="Search TV">
+    <br></br>
+    <input name="change"type="button" id="change"value="Change Format">
+    <div id="results" class="resultsList"></div>
+    <div id="pages"style="visibility: hidden;">
+        <input id="left" type="button" value="<<">
+        <p id="pgnumber" >1</p>
+        <input id="right" type="button" value=">>" >
+    </div>
+    <br></br>
+    <div id="details"></div>
+</body>
+</html>
